@@ -12,6 +12,12 @@ ENT.AdminSpawnable	= false
 
 ENT.Category		= "Traffic Lighter"
 
-TRAFFIC_LIGHT_START	= Color(0, 150, 0, 255)
-TRAFFIC_LIGHT_WAIT	= Color(255, 128, 0, 255)
-TRAFFIC_LIGHT_STOP	= Color(255, 0, 0, 255)
+function ENT:SetupDataTables()
+	self:NetworkVar("String", 0, "Light")
+	self:NetworkVar("Int", 0, "Timer")
+	self:NetworkVar("Int", 1, "TimerWait")
+	
+	self:NetworkVar("String", 1, "LightStart")
+	self:NetworkVar("String", 2, "LightWait")
+	self:NetworkVar("String", 3, "LightStop")
+end

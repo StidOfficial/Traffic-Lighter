@@ -3,13 +3,9 @@ AddCSLuaFile("shared.lua")
  
 include("shared.lua")
 
-function ENT:SetLight(color)
-	self:SetNWString("Light", tostring(color))
-end
-
-function ENT:GetLight()
+function ColorToTable(color)
 	local ColorOutput = Color(255, 255, 255, 255)
-	local TableColor = string.Split(self:GetNWString("Light"), " ")
+	local TableColor = string.Split(color, " ")
 	if table.Count(TableColor) == 4 then
 		ColorOutput = Color(TableColor[1], TableColor[2], TableColor[3], TableColor[4])
 	end
@@ -19,7 +15,6 @@ end
 function ENT:Initialize()
 	self:SetModel("models/props_c17/traffic_light001a.mdl")
 
-	self:SetLight(TRAFFIC_LIGHT_START)
 	self:PhysicsInit(SOLID_VPHYSICS)
 	self:SetMoveType(MOVETYPE_VPHYSICS)
 	self:SetSolid(SOLID_VPHYSICS)
@@ -29,22 +24,32 @@ function ENT:Initialize()
 		phys:Wake()
 	end
 	
-	local ENT = self
+	self:SetTimer(TRAFFIC_LIGHTER_CONFIG[self:GetClass()].Timer)
+	self:SetTimerWait(TRAFFIC_LIGHTER_CONFIG[self:GetClass()].TimerWait)
+	
+	self:SetLightStop(tostring(Color(255, 0, 0, 255)))
+	self:SetLightWait(tostring(Color(255, 128, 0, 255)))
+	self:SetLightStart(tostring(Color(0, 150, 0, 255)))
+	
+	self:SetLight(self:GetLightStart())
+	
 	local function Traffic()
-		if ENT:GetLight() == TRAFFIC_LIGHT_STOP then
-			ENT:SetLight(TRAFFIC_LIGHT_START)
-		elseif ENT:GetLight() == TRAFFIC_LIGHT_START then
-			ENT:SetLight(TRAFFIC_LIGHT_WAIT)
-			timer.Simple(TRAFFIC_LIGHTER_CONFIG[self:GetModel()].TimerWait, function()
-				ENT:SetLight(TRAFFIC_LIGHT_STOP)
+		if self:GetLight() == self:GetLightStop() then
+			self:SetLight(self:GetLightStart())
+		elseif self:GetLight() == self:GetLightStart() then
+			self:SetLight(self:GetLightWait())
+			timer.Simple(self:GetTimerWait(), function()
+				if IsValid(self) then
+					self:SetLight(self:GetLightStop())
+				end
 			end)
 		end
 	end
-	timer.Create("TrafficLight_"..self:GetCreationID(), TRAFFIC_LIGHTER_CONFIG[self:GetModel()].Timer, 0, Traffic)
+	timer.Create("TrafficLight_"..self:GetCreationID(), self:GetTimer(), 0, Traffic)
 end
  
 function ENT:Use(activator, caller)
-    return;
+    return
 end
 
 function ENT:OnRemove()
