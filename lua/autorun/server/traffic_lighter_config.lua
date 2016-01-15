@@ -1,3 +1,5 @@
-TRAFFIC_LIGHTER_CONFIG = {}
-TRAFFIC_LIGHTER_CONFIG["models/props_c17/traffic_light001a.mdl"] = {Timer = 20, TimerWait = 5}
-TRAFFIC_LIGHTER_CONFIG["models/props/cs_assault/stoplight.mdl"] = {Timer = 20, TimerWait = 5}
+if not TRAFFIC_LIGHTER_CONFIG then
+	TRAFFIC_LIGHTER_CONFIG = {}
+	TRAFFIC_LIGHTER_CONFIG["traffic_light_basic"] = {Timer = 5, TimerWait = 2}
+	TRAFFIC_LIGHTER_CONFIG["traffic_light_column"] = {Timer = 5, TimerWait = 2}
+end
